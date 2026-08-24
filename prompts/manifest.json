@@ -1,0 +1,27 @@
+{
+  "general_chat": {
+    "latest": 1,
+    "description": "通用简洁问答（默认模板）",
+    "variables": []
+  },
+  "db_assistant": {
+    "latest": 2,
+    "description": "数据库问答（需配合工具调用）；v2 增加输出规范",
+    "variables": []
+  },
+  "city_info_json": {
+    "latest": 1,
+    "description": "城市信息结构化输出",
+    "variables": []
+  },
+  "coding_agent_decision": {
+    "latest": 1,
+    "description": "编码 Agent 单轮决策（结构化动作输出）",
+    "variables": []
+  },
+  "db_query": {
+    "latest": 1,
+    "description": "数据库方言相关查询助手（演示 {{dialect}} 变量替换）",
+    "variables": ["dialect"]
+  }
+}

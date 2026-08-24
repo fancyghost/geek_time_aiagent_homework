@@ -1,0 +1,149 @@
+双模型输出内容实录（网关 POST /v1/invoke，完整未截断）
+生成时间：2026-08-23 23:00:45
+
+==============================================================================
+【llama-local】非流式调用
+==============================================================================
+请求：POST /v1/invoke
+{
+  "model": "llama-local",
+  "input": "用一句话介绍北京",
+  "template": "general_chat",
+  "max_output_tokens": 256
+}
+
+状态码：200
+request_id：8910c930af7a458aaefe9a3a64a9d878
+kind：text　finish_reason：stop　latency_ms：980.59
+usage：{"input_tokens": 69, "output_tokens": 45, "cached_tokens": 55, "reasoning_tokens": 0}
+
+模型完整输出：
+北京是中国的首都，一座集政治、文化、历史与现代科技于一体的国际化大都市。
+
+==============================================================================
+【llama-local】流式输出（SSE）
+==============================================================================
+请求：POST /v1/invoke
+{
+  "model": "llama-local",
+  "stream": true,
+  "input": "用三句话介绍长城",
+  "template": "general_chat",
+  "max_output_tokens": 256
+}
+
+SSE delta 块数：45　客户端首块：2234ms
+done 事件：ttft_ms=2231.97 latency_ms=3091.51 usage={"input_tokens": 70, "output_tokens": 162, "cached_tokens": 55, "reasoning_tokens": 0}
+
+流式拼接完整输出：
+长城是中国古代为防御北方游牧民族侵扰而修建的军事防御工程。  
+它历经多个朝代修筑，现存遗迹以明代长城最为完整。  
+长城是世界文化遗产，也是中华民族坚韧与智慧的象征。
+
+==============================================================================
+【llama-local】结构化输出
+==============================================================================
+请求：POST /v1/invoke
+{
+  "model": "llama-local",
+  "input": "介绍北京",
+  "template": "city_info_json",
+  "max_output_tokens": 256,
+  "output_schema": {
+    "type": "object",
+    "properties": {
+      "city": {
+        "type": "string"
+      },
+      "is_capital": {
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "city",
+      "is_capital"
+    ]
+  }
+}
+
+状态码：200
+request_id：1efa891e8bfb430ab1c928458cc53f54
+kind：structured　finish_reason：stop　latency_ms：2224.12
+usage：{"input_tokens": 124, "output_tokens": 99, "cached_tokens": 120, "reasoning_tokens": 0}
+
+结构化 data：{"city": "北京", "is_capital": true}
+模型完整输出：
+{"city":"北京","is_capital":true}
+
+==============================================================================
+【deepseek-v4-flash】非流式调用
+==============================================================================
+请求：POST /v1/invoke
+{
+  "model": "deepseek-v4-flash",
+  "input": "用一句话介绍北京",
+  "template": "general_chat",
+  "max_output_tokens": 256
+}
+
+状态码：200
+request_id：45fdef9b25664284a4962324ab8d672a
+kind：text　finish_reason：stop　latency_ms：824.24
+usage：{"input_tokens": 21, "output_tokens": 18, "cached_tokens": 0, "reasoning_tokens": 0}
+
+模型完整输出：
+北京是中国的首都，一座融合了千年古都底蕴与现代国际风貌的特大城市。
+
+==============================================================================
+【deepseek-v4-flash】流式输出（SSE）
+==============================================================================
+请求：POST /v1/invoke
+{
+  "model": "deepseek-v4-flash",
+  "stream": true,
+  "input": "用三句话介绍长城",
+  "template": "general_chat",
+  "max_output_tokens": 256
+}
+
+SSE delta 块数：73　客户端首块：736ms
+done 事件：ttft_ms=734.3 latency_ms=1740.14 usage={"input_tokens": 22, "output_tokens": 73, "cached_tokens": 0, "reasoning_tokens": 0}
+
+流式拼接完整输出：
+长城是中国古代的军事防御工程，始建于春秋战国时期，后经秦始皇连接和历代修缮，现存最完整的是明长城。它东起山海关，西至嘉峪关，绵延超过2万公里，被誉为世界建筑史上的奇迹。长城不仅是军事屏障，也承载着中华民族坚韧不屈的文化象征，1987年被列入世界文化遗产。
+
+==============================================================================
+【deepseek-v4-flash】结构化输出（responses 接口）
+==============================================================================
+请求：POST /v1/invoke
+{
+  "model": "deepseek-v4-flash",
+  "input": "介绍北京",
+  "template": "city_info_json",
+  "api_mode": "responses",
+  "max_output_tokens": 256,
+  "output_schema": {
+    "type": "object",
+    "properties": {
+      "city": {
+        "type": "string"
+      },
+      "is_capital": {
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "city",
+      "is_capital"
+    ]
+  }
+}
+
+状态码：200
+request_id：00ed61ed1694490fb1e6731c9c1fad29
+kind：structured　finish_reason：stop　latency_ms：1075.15
+usage：{"input_tokens": 159, "output_tokens": 63, "cached_tokens": 128, "reasoning_tokens": 49}
+
+结构化 data：{"city": "北京", "is_capital": true}
+模型完整输出：
+{"city": "北京", "is_capital": true}

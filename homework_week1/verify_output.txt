@@ -1,0 +1,28 @@
+网关地址：http://127.0.0.1:8000　验证模型：llama-local
+
+[PASS] 模型调用（llama 本地）：status=200 kind=text text[:30]='北京是中华人民共和国首都，兼具悠久历史文化和现代政治、文化、' latency=2212.62ms
+[PASS] 流式输出（SSE）：SSE 块数=45 done.ttft_ms=1282.73 客户端首块=1284ms 全文[:30]='长城是中国古代为防御北方游牧民族而修建的军事防御工程。它横跨'
+[PASS] 结构化输出：kind=structured data={'city': '北京', 'is_capital': True} 原始文本[:50]='{"city":"北京","is_capital":true}'
+[PASS] 模板版本管理：v1 解析=db_assistant@v1 latest 解析=db_assistant@v2 变量替换含 MySQL=True 缺变量=400/TEMPLATE_VAR_MISSING 未登记模板=404/TEMPLATE_NOT_FOUND
+[PASS] 可观测性：模型聚合={"model": "llama-local", "calls": 64, "ok_calls": 63, "tokens": {"input": 5355, "output": 4788, "cached": 4423, "reasoning": 0}, "latency_ms": {"avg": 2043.37, "p95": 2929.04}, "ttft_ms": {"avg": 1346.96, "p95": 2251.81}} 最近明细条数=5（含 ttft/latency/tokens 分类）
+[PASS] 重试（指数退避）：status=200 retries=2 总耗时=2699ms（含 0.5s+1.0s 退避）
+[PASS] 限流（429）：5 连发状态码=[200, 200, 200, 429, 429] 429 次数=2 错误码={'LOCAL_RATE_LIMITED'}
+[PASS] 模型调用（deepseek 云端）：status=200 kind=text text[:30]='北京是中国的首都，一座融合了千年古都底蕴与现代国际风貌的特大' latency=829.89ms
+[PASS] 流式输出（deepseek 云端）：SSE 块数=32 done.ttft_ms=438.77 全文[:30]='长城是中国古代为抵御北方游牧民族入侵而修建的巨型军事防御工程'
+[PASS] 结构化输出（deepseek responses）：status=200 kind=structured data={'city': '北京', 'is_capital': True} usage={'input_tokens': 159, 'output_tokens': 36, 'cached_tokens': 128, 'reasoning_tokens': 22}
+
+========================================================================
+功能点                     结论      证据
+------------------------------------------------------------------------
+模型调用（llama 本地）        PASS    status=200 kind=text text[:30]='北京是中华人民共和国首都，兼具悠久历史文化和现代政治、文化、' latency=2212.62ms
+流式输出（SSE）             PASS    SSE 块数=45 done.ttft_ms=1282.73 客户端首块=1284ms 全文[:30]='长城是中国古代为防御北方游牧民族而修建的军事防御工程。它横跨'
+结构化输出                 PASS    kind=structured data={'city': '北京', 'is_capital': True} 原始文本[:50]='{"city":"北京","is_capital":true}'
+模板版本管理                PASS    v1 解析=db_assistant@v1 latest 解析=db_assistant@v2 变量替换含 MySQL=True 缺变量=400/TEMPLATE_VAR_MISSING 未登记模板=404/TEMPLA
+可观测性                  PASS    模型聚合={"model": "llama-local", "calls": 64, "ok_calls": 63, "tokens": {"input": 5355, "output": 4788, "cached":
+重试（指数退避）              PASS    status=200 retries=2 总耗时=2699ms（含 0.5s+1.0s 退避）
+限流（429）               PASS    5 连发状态码=[200, 200, 200, 429, 429] 429 次数=2 错误码={'LOCAL_RATE_LIMITED'}
+模型调用（deepseek 云端）     PASS    status=200 kind=text text[:30]='北京是中国的首都，一座融合了千年古都底蕴与现代国际风貌的特大' latency=829.89ms
+流式输出（deepseek 云端）     PASS    SSE 块数=32 done.ttft_ms=438.77 全文[:30]='长城是中国古代为抵御北方游牧民族入侵而修建的巨型军事防御工程'
+结构化输出（deepseek responses）PASS    status=200 kind=structured data={'city': '北京', 'is_capital': True} usage={'input_tokens': 159, 'output_tokens'
+========================================================================
+全部功能验证通过
