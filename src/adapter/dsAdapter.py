@@ -23,6 +23,11 @@ from src.adapter.modelAdapter import (
 from src.config import get_settings
 
 
+def _thinking_extra_body(thinking: bool) -> dict[str, dict[str, str]]:
+    """构造 thinking 开关参数：默认 disabled，显式开启时为 enabled。"""
+    return {"thinking": {"type": "enabled" if thinking else "disabled"}}
+
+
 def _usage_details(usage: Any) -> tuple[int, int]:
     """从 usage 明细提取 (cached_tokens, reasoning_tokens)，字段缺失时为 0。"""
     cached = 0
@@ -106,7 +111,7 @@ class DeepSeekChatAdapter(ModelAdapter):
         """通过 chat completions 接口调用，返回统一格式的 ModelResult。"""
         system, kwargs = self._chat_kwargs(request, request.system)
 
-        # 调用 chat completions 接口；thinking 显式关闭（深度思考模式）
+        # 调用 chat completions 接口；thinking 按请求开关（默认关闭深度思考模式）
         raw = self.client.chat.completions.create(
             model=self.model_name,
             messages=[
@@ -114,7 +119,7 @@ class DeepSeekChatAdapter(ModelAdapter):
                 {"role": "user", "content": request.user},
             ],
             max_tokens=request.max_output_tokens,
-            extra_body={"thinking": {"type": "disabled"}},
+            extra_body=_thinking_extra_body(request.thinking),
             **kwargs,
         )
 
@@ -174,13 +179,13 @@ class DeepSeekChatAdapter(ModelAdapter):
         """通过 responses 接口调用，返回统一格式的 ModelResult。"""
         kwargs = self._responses_kwargs(request)
 
-        # 调用 responses 接口；thinking 显式关闭（不支持的参数服务端会静默忽略）
+        # 调用 responses 接口；thinking 按请求开关（默认关闭，不支持的参数服务端会静默忽略）
         raw = self.client.responses.create(
             model=self.model_name,
             instructions=request.system,
             input=request.user,
             max_output_tokens=request.max_output_tokens,
-            extra_body={"thinking": {"type": "disabled"}},
+            extra_body=_thinking_extra_body(request.thinking),
             **kwargs,
         )
 
@@ -241,7 +246,7 @@ class DeepSeekChatAdapter(ModelAdapter):
                 {"role": "user", "content": request.user},
             ],
             max_tokens=request.max_output_tokens,
-            extra_body={"thinking": {"type": "disabled"}},
+            extra_body=_thinking_extra_body(request.thinking),
             stream=True,
             stream_options={"include_usage": True},  # 末块携带 usage
             **kwargs,
@@ -290,7 +295,7 @@ class DeepSeekChatAdapter(ModelAdapter):
             instructions=request.system,
             input=request.user,
             max_output_tokens=request.max_output_tokens,
-            extra_body={"thinking": {"type": "disabled"}},
+            extra_body=_thinking_extra_body(request.thinking),
             stream=True,
             **kwargs,
         )

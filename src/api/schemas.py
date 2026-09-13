@@ -32,6 +32,10 @@ class InvokeRequest(BaseModel):
     api_mode: Literal["chat_completions", "responses"] | None = Field(
         default=None, description="指定底层接口；缺省由适配器默认选择"
     )
+    thinking: bool = Field(
+        default=False,
+        description="思维链开关：默认关闭；true 时模型先推理再作答（需模型与服务端支持）",
+    )
 
 
 class UsageOut(BaseModel):

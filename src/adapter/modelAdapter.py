@@ -56,6 +56,7 @@ class ModelRequest:
     output_schema: dict[str, Any] | None = None  # 期望的结构化输出 JSON Schema，None 表示纯文本输出
     tools: list[dict[str, Any]] | None = None    # 可供模型调用的工具定义（OpenAI 格式），None 表示不启用工具调用
     api_mode: ApiMode | None = None              # 指定调用接口；None 表示由适配器按自身能力默认选择（chat_completions）
+    thinking: bool = False                        # 思维链开关：默认关闭；开启后模型先推理再作答（reasoning_tokens 计入用量）
 
     def __post_init__(self) -> None:
         # 构造时即校验：模板名与渲染文本必须且只能提供一个，把注入拦截在请求入口

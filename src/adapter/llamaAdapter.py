@@ -65,6 +65,11 @@ class LlamaCppChatAdapter(ModelAdapter):
         # 工具调用：将工具定义传给模型
         if request.tools:
             kwargs["tools"] = request.tools
+
+        # 思维链：默认关闭时不传（保持现有行为）；开启时传给 llama-server
+        # 是否生效取决于模型是否支持思考模式及 llama.cpp 版本（如 Qwen3 需较新版本）
+        if request.thinking:
+            kwargs["extra_body"] = {"thinking": {"type": "enabled"}}
         return system, kwargs
 
     def generate(self, request: ModelRequest) -> ModelResult:

@@ -5,9 +5,12 @@
 2. llama.cpp server 已运行（默认 http://localhost:8080/v1）
 
 运行：python scripts/verify_all.py
-说明：默认包含 DeepSeek 云端模型验证（消耗 token），SKIP_DEEPSEEK=1 可跳过。
+说明：默认仅验证 llama.cpp 本地模型（不消耗云端 token）。
+      网关共注册 3 个模型：llama-local / deepseek-v4-flash / deepseek-v4-pro；
+      如需验证 DeepSeek 云端模型（消耗 token），在 main() 的"模型调用验证开关区"
+      取消对应行的注释即可。
 
-验收对照：双模型调用 / 流式 / 结构化 / 模板引用 / 可观测 / 重试与限流。
+验收对照：模型调用 / 流式 / 结构化 / 模板引用 / 可观测 / 重试与限流。
 """
 import json
 import os
@@ -21,9 +24,13 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 BASE_URL = os.getenv("GATEWAY_URL", "http://127.0.0.1:8000")
 LLAMA_URL = os.getenv("LLAMA_BASE_URL", "http://localhost:8080/v1")
-MODEL = os.getenv("VERIFY_MODEL", "llama-local")
-CLOUD_MODEL = "deepseek-v4-flash"
+MODEL = os.getenv("VERIFY_MODEL", "llama-local")   # 六大功能验证使用的默认模型
 TIMEOUT = 300.0
+
+# 网关注册的 3 个模型（供"模型调用验证开关区"切换）
+MODEL_LLAMA = "llama-local"            # llama.cpp 本地部署（默认开启，不消耗 token）
+MODEL_DS_FLASH = "deepseek-v4-flash"   # DeepSeek 云端 flash
+MODEL_DS_PRO = "deepseek-v4-pro"       # DeepSeek 云端 pro
 
 # 证据收集：(功能点, 结论, 证据摘要)
 EVIDENCE: list[tuple[str, str, str]] = []
@@ -51,6 +58,7 @@ def verify_model_invoke(client: httpx.Client, model: str, tag: str) -> None:
               "max_output_tokens": 256},
     )
     body = resp.json()
+    print(body)
     ok = (
         resp.status_code == 200
         and body.get("kind") == "text"
@@ -239,18 +247,18 @@ def verify_rate_limit(client: httpx.Client) -> None:
     )
 
 
-def verify_deepseek_stream(client: httpx.Client) -> None:
+def verify_deepseek_stream(client: httpx.Client, model: str) -> None:
     """云端模型流式输出：SSE 逐块返回（chat completions stream）。"""
     chunks: list[str] = []
     done: dict | None = None
     with client.stream(
         "POST",
         "/v1/invoke",
-        json={"model": CLOUD_MODEL, "input": "用一句话介绍长城", "template": "general_chat",
+        json={"model": model, "input": "用一句话介绍长城", "template": "general_chat",
               "stream": True, "max_output_tokens": 128},
     ) as resp:
         if resp.status_code != 200:
-            record("流式输出（deepseek 云端）", False,
+            record(f"流式输出（{model} 云端）", False,
                    f"status={resp.status_code} body={resp.read()[:200]!r}")
             return
         for line in resp.iter_lines():
@@ -264,17 +272,17 @@ def verify_deepseek_stream(client: httpx.Client) -> None:
 
     ok = len(chunks) >= 1 and done is not None and done.get("ttft_ms") is not None
     record(
-        "流式输出（deepseek 云端）",
+        f"流式输出（{model} 云端）",
         ok,
         f"SSE 块数={len(chunks)} done.ttft_ms={done.get('ttft_ms') if done else None} "
         f"全文[:30]={''.join(chunks)[:30]!r}",
     )
 
 
-def verify_deepseek_responses(client: httpx.Client) -> None:
+def verify_deepseek_responses(client: httpx.Client, model: str) -> None:
     """云端模型 responses 接口 + 原生 json_schema 结构化输出。"""
     resp = client.post("/v1/invoke", json={
-        "model": CLOUD_MODEL, "input": "介绍北京", "template": "city_info_json",
+        "model": model, "input": "介绍北京", "template": "city_info_json",
         "api_mode": "responses", "max_output_tokens": 256,
         "output_schema": {
             "type": "object",
@@ -292,7 +300,7 @@ def verify_deepseek_responses(client: httpx.Client) -> None:
         and isinstance(data.get("is_capital"), bool)
     )
     record(
-        "结构化输出（deepseek responses）",
+        f"结构化输出（{model} responses）",
         ok,
         f"status={resp.status_code} kind={body.get('kind')} data={data} usage={body.get('usage')}",
     )
@@ -315,22 +323,30 @@ def main() -> int:
         print(f"llama.cpp server 不可达（{LLAMA_URL}），请先启动本地 server 再运行验证。")
         return 2
 
-    # 六大功能验证
-    verify_model_invoke(client, MODEL, "llama 本地")
+    # ------------------------------------------------------------------
+    # 模型调用验证开关区（功能1：统一调用入口）
+    # 网关共注册 3 个模型，默认仅开启 llama.cpp 本地模型；
+    # 如需验证云端模型（消耗 token），取消对应行的注释即可。
+    # ------------------------------------------------------------------
+
+    # —— 模型 1/3：llama.cpp 本地（默认开启，不消耗 token）——
+    verify_model_invoke(client, MODEL_LLAMA, "llama 本地")
+
+    # —— 模型 2/3：DeepSeek 云端 flash（默认关闭，取消注释开启，消耗 token）——
+    # verify_model_invoke(client, MODEL_DS_FLASH, "deepseek flash 云端")
+    # verify_deepseek_stream(client, MODEL_DS_FLASH)
+    # verify_deepseek_responses(client, MODEL_DS_FLASH)
+
+    # —— 模型 3/3：DeepSeek 云端 pro（默认关闭，取消注释开启，消耗 token）——
+    # verify_model_invoke(client, MODEL_DS_PRO, "deepseek pro 云端")
+
+    # 六大功能验证（基于默认 MODEL=llama 本地模型）
     verify_streaming(client)
     verify_structured(client)
     verify_templates(client)
     verify_observability(client)
     verify_retry(client)
     verify_rate_limit(client)
-
-    # 云端模型（deepseek-v4-flash）：普通调用 / 流式 / responses 结构化，消耗 token
-    if os.getenv("SKIP_DEEPSEEK") == "1":
-        print("\n[SKIP] DeepSeek 云端验证已跳过（SKIP_DEEPSEEK=1）")
-    else:
-        verify_model_invoke(client, CLOUD_MODEL, "deepseek 云端")
-        verify_deepseek_stream(client)
-        verify_deepseek_responses(client)
 
     # 证据表汇总
     print("\n" + "=" * 72)

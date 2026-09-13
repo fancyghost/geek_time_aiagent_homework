@@ -83,6 +83,7 @@ def _build_model_request(req: Any, system_text: str) -> ModelRequest:
         output_schema=req.output_schema,
         tools=req.tools,
         api_mode=req.api_mode,
+        thinking=req.thinking,
     )
 
 
