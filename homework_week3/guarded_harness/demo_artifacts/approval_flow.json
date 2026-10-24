@@ -1,0 +1,91 @@
+{
+  "pending_before_approval": null,
+  "phase_1_paused": {
+    "run_id": "demo4-approval",
+    "status": "waiting_approval",
+    "stop_reason": "waiting_approval",
+    "accepted": false,
+    "reason": "写操作等待人工审批",
+    "final_answer": null,
+    "steps_used": 1,
+    "writes_used": 0,
+    "resumed": false,
+    "recovery": null
+  },
+  "phase_2_after_approval": {
+    "run_id": "demo4-approval",
+    "status": "completed",
+    "stop_reason": "completed",
+    "accepted": true,
+    "reason": "交付物与证据齐备且在当前版本有效",
+    "final_answer": "已修复并通过测试。",
+    "steps_used": 4,
+    "writes_used": 1,
+    "resumed": false,
+    "recovery": null
+  },
+  "write_chain": [
+    {
+      "seq": 2,
+      "run_id": "demo4-approval",
+      "phase": "approval",
+      "decision": "confirm",
+      "rule": "WAITING_APPROVAL",
+      "actor": "model",
+      "tool_call_id": "d-write",
+      "tool_name": "write_file",
+      "step_number": 1,
+      "message": "写操作等待人工审批：app.py",
+      "detail": {
+        "args_digest": "8495e77b003d4f726b4169d28354b5f8012c0926b507909b76c5ad8b55ab5d7a"
+      },
+      "latency_ms": null
+    },
+    {
+      "seq": 5,
+      "run_id": "demo4-approval",
+      "phase": "gate",
+      "decision": "allow",
+      "rule": "ALLOWED",
+      "actor": "user",
+      "tool_call_id": "d-write",
+      "tool_name": "write_file",
+      "step_number": 2,
+      "message": "全部前置检查通过",
+      "detail": {},
+      "latency_ms": null
+    },
+    {
+      "seq": 6,
+      "run_id": "demo4-approval",
+      "phase": "approval",
+      "decision": "approved",
+      "rule": "APPROVED",
+      "actor": "user",
+      "tool_call_id": "d-write",
+      "tool_name": "write_file",
+      "step_number": 2,
+      "message": "审批 ap-demo4 已消费",
+      "detail": {
+        "args_digest": "8495e77b003d4f726b4169d28354b5f8012c0926b507909b76c5ad8b55ab5d7a"
+      },
+      "latency_ms": null
+    },
+    {
+      "seq": 7,
+      "run_id": "demo4-approval",
+      "phase": "result",
+      "decision": "executed",
+      "rule": "OK",
+      "actor": "harness",
+      "tool_call_id": "d-write",
+      "tool_name": "write_file",
+      "step_number": 2,
+      "message": "handler executed",
+      "detail": {
+        "is_write": true
+      },
+      "latency_ms": 1.65
+    }
+  ]
+}

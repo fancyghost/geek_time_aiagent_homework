@@ -1,0 +1,39 @@
+# 审计决策链 · run_id=run_full
+# 每条记录含 seq / phase / decision / rule / actor / tool_call_id（可追责）。
+
+## A1 · 被拒调用留痕：S1 路径逃逸（call_escape）
+#  2 [gate/deny] rule=PATH_ESCAPE actor=model tool_call_id=call_escape tool=read_file :: 路径逃逸出工作区：requested='../../.env' real='C:\\Users\\lurui\\AppData\\Local\\Temp\\guarded_demo_2a0a8n9p\\.env' root='C:\\Users\\lurui\\AppData\\Local\\Temp\\guarded_demo_2a0a8n9p\\full\\ws'
+#  3 [sandbox/deny] rule=sandbox actor=harness tool_call_id=call_escape tool=read_file :: sandbox precheck
+
+## A1 · 被拒调用留痕：G1 参数缺失（call_missing）
+#  4 [gate/deny] rule=INVALID_ARGUMENT actor=model tool_call_id=call_missing tool=read_file :: 参数校验失败
+#  5 [sandbox/deny] rule=schema_validation actor=harness tool_call_id=call_missing tool=read_file :: sandbox precheck
+
+## A2 · 审批后写入的完整链路：Gate → Approval → Result（call_write）
+# 14 [gate/allow] rule=ALLOWED actor=model tool_call_id=call_write tool=write_file :: 全部前置检查通过
+# 15 [approval/approved] rule=APPROVED actor=user tool_call_id=call_write tool=write_file :: 审批 ap_748662f1 已消费
+# 16 [result/executed] rule=OK actor=harness tool_call_id=call_write tool=write_file :: handler executed
+
+## 本次 run 的完整决策链（共 22 条）
+#  1 [state/recorded] rule=RUN_STARTED actor=harness :: 修复 app.py 中的 add，使 test_app.py 通过
+#  2 [gate/deny] rule=PATH_ESCAPE actor=model tool_call_id=call_escape tool=read_file :: 路径逃逸出工作区：requested='../../.env' real='C:\\Users\\lurui\\AppData\\Local\\Temp\\guarded_demo_2a0a8n9p\\.env' root='C:\\Users\\lurui\\AppData\\Local\\Temp\\guarded_demo_2a0a8n9p\\full\\ws'
+#  3 [sandbox/deny] rule=sandbox actor=harness tool_call_id=call_escape tool=read_file :: sandbox precheck
+#  4 [gate/deny] rule=INVALID_ARGUMENT actor=model tool_call_id=call_missing tool=read_file :: 参数校验失败
+#  5 [sandbox/deny] rule=schema_validation actor=harness tool_call_id=call_missing tool=read_file :: sandbox precheck
+#  6 [gate/allow] rule=ALLOWED actor=model tool_call_id=call_list tool=list_dir :: 全部前置检查通过
+#  7 [result/executed] rule=OK actor=harness tool_call_id=call_list tool=list_dir :: handler executed
+#  8 [gate/allow] rule=ALLOWED actor=model tool_call_id=call_read_app tool=read_file :: 全部前置检查通过
+#  9 [result/executed] rule=OK actor=harness tool_call_id=call_read_app tool=read_file :: handler executed
+# 10 [gate/allow] rule=ALLOWED actor=model tool_call_id=call_read_test tool=read_file :: 全部前置检查通过
+# 11 [result/executed] rule=OK actor=harness tool_call_id=call_read_test tool=read_file :: handler executed
+# 12 [gate/allow] rule=ALLOWED actor=model tool_call_id=call_test_before tool=run_test :: 全部前置检查通过
+# 13 [result/executed] rule=OK actor=harness tool_call_id=call_test_before tool=run_test :: handler executed
+# 14 [gate/allow] rule=ALLOWED actor=model tool_call_id=call_write tool=write_file :: 全部前置检查通过
+# 15 [approval/approved] rule=APPROVED actor=user tool_call_id=call_write tool=write_file :: 审批 ap_748662f1 已消费
+# 16 [result/executed] rule=OK actor=harness tool_call_id=call_write tool=write_file :: handler executed
+# 17 [gate/allow] rule=ALLOWED actor=model tool_call_id=call_test_after tool=run_test :: 全部前置检查通过
+# 18 [result/executed] rule=OK actor=harness tool_call_id=call_test_after tool=run_test :: handler executed
+# 19 [gate/allow] rule=ALLOWED actor=model tool_call_id=call_1 tool=final_answer :: 全部前置检查通过
+# 20 [result/executed] rule=OK actor=harness tool_call_id=call_1 tool=final_answer :: handler executed
+# 21 [result/executed] rule=COMPLETION_ACCEPTED actor=harness :: 交付物与证据齐备且在当前版本有效
+# 22 [state/recorded] rule=completed actor=harness :: 运行停止：completed

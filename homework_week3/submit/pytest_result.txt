@@ -1,0 +1,5 @@
+﻿# pytest -q 实际结果（在 homework_week3/submit 目录下执行）
+# 命令: python -m pytest -q
+
+.............................                                            [100%]
+101 passed in 4.27s

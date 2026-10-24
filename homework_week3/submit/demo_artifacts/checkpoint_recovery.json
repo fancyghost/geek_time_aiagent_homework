@@ -1,0 +1,101 @@
+{
+  "c3_cross_instance_resume": {
+    "instance_1_partial": {
+      "run_id": "demo3-resume",
+      "status": "stopped",
+      "stop_reason": "max_steps",
+      "accepted": false,
+      "reason": "达到本次会话步数上限",
+      "final_answer": null,
+      "steps_used": 2,
+      "writes_used": 0,
+      "resumed": false,
+      "recovery": null
+    },
+    "instance_2_resumed": {
+      "run_id": "demo3-resume",
+      "status": "completed",
+      "stop_reason": "completed",
+      "accepted": true,
+      "reason": "交付物与证据齐备且在当前版本有效",
+      "final_answer": "a=1，b=2。",
+      "steps_used": 3,
+      "writes_used": 0,
+      "resumed": true,
+      "recovery": {
+        "run_id": "demo3-resume",
+        "resumed_from_step": 2,
+        "unknown_result_tool_calls": [],
+        "workspace_changed": false,
+        "invalidated_evidence": 0,
+        "revoked_approvals": 0,
+        "status": "stopped",
+        "stop_reason": "max_steps",
+        "notes": []
+      }
+    },
+    "recovery_report": {
+      "run_id": "demo3-resume",
+      "resumed_from_step": 2,
+      "unknown_result_tool_calls": [],
+      "workspace_changed": false,
+      "invalidated_evidence": 0,
+      "revoked_approvals": 0,
+      "status": "stopped",
+      "stop_reason": "max_steps",
+      "notes": []
+    },
+    "budget_after_resume": {
+      "max_steps": 12,
+      "max_writes": 8,
+      "max_seconds": 600.0,
+      "steps_used": 3,
+      "writes_used": 0,
+      "started_at": 1792850555.6712906,
+      "seconds_used": 0.057
+    }
+  },
+  "c2_unknown_result_no_replay": {
+    "outcome": {
+      "run_id": "demo3-c2",
+      "status": "stopped",
+      "stop_reason": "unknown_result",
+      "accepted": false,
+      "reason": "存在结果未知的写操作（1 个），禁止自动重放",
+      "final_answer": null,
+      "steps_used": 1,
+      "writes_used": 0,
+      "resumed": true,
+      "recovery": {
+        "run_id": "demo3-c2",
+        "resumed_from_step": 1,
+        "unknown_result_tool_calls": [
+          "c2-write"
+        ],
+        "workspace_changed": false,
+        "invalidated_evidence": 0,
+        "revoked_approvals": 0,
+        "status": "running",
+        "stop_reason": null,
+        "notes": [
+          "unknown_result_writes=1"
+        ]
+      }
+    },
+    "recovery_report": {
+      "run_id": "demo3-c2",
+      "resumed_from_step": 1,
+      "unknown_result_tool_calls": [
+        "c2-write"
+      ],
+      "workspace_changed": false,
+      "invalidated_evidence": 0,
+      "revoked_approvals": 0,
+      "status": "running",
+      "stop_reason": null,
+      "notes": [
+        "unknown_result_writes=1"
+      ]
+    }
+  }
+}

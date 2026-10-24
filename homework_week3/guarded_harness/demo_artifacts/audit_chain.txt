@@ -1,0 +1,12 @@
+### A1 · 缺参数写被 G1 拒绝 (tool_call_id=tc-bad)
+#  2 [gate/deny] rule=INVALID_ARGUMENT actor=model tool_call_id=tc-bad tool=write_file :: 参数校验失败
+
+### A2 · 读放行 (tool_call_id=tc-read)
+#  3 [gate/allow] rule=ALLOWED actor=model tool_call_id=tc-read tool=read_file :: 全部前置检查通过
+#  4 [result/executed] rule=OK actor=harness tool_call_id=tc-read tool=read_file :: handler executed
+
+### A2 · 写：待审批 → 批准 → 执行 (tool_call_id=tc-write)
+#  5 [approval/confirm] rule=WAITING_APPROVAL actor=model tool_call_id=tc-write tool=write_file :: 写操作等待人工审批：app.py
+#  8 [gate/allow] rule=ALLOWED actor=user tool_call_id=tc-write tool=write_file :: 全部前置检查通过
+#  9 [approval/approved] rule=APPROVED actor=user tool_call_id=tc-write tool=write_file :: 审批 ap-demo2 已消费
+# 10 [result/executed] rule=OK actor=harness tool_call_id=tc-write tool=write_file :: handler executed

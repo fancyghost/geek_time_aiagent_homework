@@ -1,0 +1,342 @@
+{
+  "run": {
+    "run_id": "demo1-repair",
+    "task": "修复 app.py，使 test_app.py 通过",
+    "task_kind": "test_repair",
+    "status": "completed",
+    "stop_reason": "completed",
+    "final_answer": "已将 add 修复为 a + b，test_app.py 通过。",
+    "workspace_fingerprint": "bdf8e1a4d216f167d1e6ce7ac2c064c960b118bfe69b5e62044da47d7ebade85"
+  },
+  "budget": {
+    "max_steps": 12,
+    "max_writes": 8,
+    "max_seconds": 600.0,
+    "steps_used": 4,
+    "writes_used": 1,
+    "started_at": 1792850555.2030547,
+    "seconds_used": 0.392
+  },
+  "evidence": [
+    {
+      "kind": "file_read",
+      "ref": "test_app.py",
+      "detail": {
+        "chars": 64,
+        "sha256": "d295a6952598b0430a9cc4b130f927b48fb7d78b5f7b2635716e8699ebe3040a"
+      },
+      "fingerprint": "d2239ab18ec9e9fc4d30b6af6318989b8ef337d474ba3a70d10898bccd8ff3f3",
+      "step_number": 1,
+      "tool_call_id": "b-read",
+      "invalidated": false,
+      "invalidated_reason": "",
+      "created_at": 1792850555.2130702
+    },
+    {
+      "kind": "deliverable",
+      "ref": "app.py",
+      "detail": {
+        "bytes": 32,
+        "sha256": "ba1a531f581d2e6094e978ed6f7aca7a8d92eeb62c6e7ad73ee692f7f18bc772"
+      },
+      "fingerprint": "bdf8e1a4d216f167d1e6ce7ac2c064c960b118bfe69b5e62044da47d7ebade85",
+      "step_number": 2,
+      "tool_call_id": "b-write",
+      "invalidated": false,
+      "invalidated_reason": "",
+      "created_at": 1792850555.229092
+    },
+    {
+      "kind": "test_result",
+      "ref": "python -B -m pytest -q test_app.py",
+      "detail": {
+        "returncode": 0,
+        "passed": true,
+        "timed_out": false,
+        "terminated": false,
+        "elapsed_ms": 329,
+        "stdout_tail": ".                                                                        [100%]\n1 passed in 0.01s\n",
+        "stderr_tail": ""
+      },
+      "fingerprint": "bdf8e1a4d216f167d1e6ce7ac2c064c960b118bfe69b5e62044da47d7ebade85",
+      "step_number": 3,
+      "tool_call_id": "b-test",
+      "invalidated": false,
+      "invalidated_reason": "",
+      "created_at": 1792850555.5683107
+    }
+  ],
+  "steps": [
+    {
+      "step_number": 1,
+      "tool_call_id": "b-read",
+      "tool_name": "read_file",
+      "args_digest": "288a120c420c816413450280944ccd4beded24301d784ef9475911de637a2add",
+      "decision": "allow",
+      "rule": "ALLOWED",
+      "result_status": "success",
+      "is_write": false,
+      "idempotency_key": "",
+      "arguments": {
+        "path": "test_app.py"
+      },
+      "observation": "{\"content\": {\"path\": \"test_app.py\", \"chars\": 64, \"preview\": \"from app import add\\n\\n\\ndef test_add():\\n    assert add(2, 3) == 5\\n\"}}",
+      "started_at": 1792850555.2130702,
+      "ended_at": 1792850555.2130702
+    },
+    {
+      "step_number": 2,
+      "tool_call_id": "b-write",
+      "tool_name": "write_file",
+      "args_digest": "8495e77b003d4f726b4169d28354b5f8012c0926b507909b76c5ad8b55ab5d7a",
+      "decision": "allow",
+      "rule": "ALLOWED",
+      "result_status": "success",
+      "is_write": true,
+      "idempotency_key": "8495e77b003d4f726b4169d28354b5f8012c0926b507909b76c5ad8b55ab5d7a",
+      "arguments": {
+        "path": "app.py",
+        "content": "def add(a, b):\n    return a + b\n"
+      },
+      "observation": "{\"content\": {\"path\": \"app.py\", \"bytes\": 32}}",
+      "started_at": 1792850555.2235792,
+      "ended_at": 1792850555.229092
+    },
+    {
+      "step_number": 3,
+      "tool_call_id": "b-test",
+      "tool_name": "run_test",
+      "args_digest": "184ebe925a567bb3b4f8d2c9dd7dc20a9878896e6e880440f3259b219b157045",
+      "decision": "allow",
+      "rule": "ALLOWED",
+      "result_status": "success",
+      "is_write": false,
+      "idempotency_key": "",
+      "arguments": {
+        "command": "python -B -m pytest -q test_app.py"
+      },
+      "observation": "{\"content\": {\"command\": \"python -B -m pytest -q test_app.py\", \"returncode\": 0, \"passed\": true, \"timed_out\": false, \"stdout_tail\": \".                                                                        [100%]\\n1 passed in 0.01s\\n\", \"stderr_tail\": \"\"}}",
+      "started_at": 1792850555.5683107,
+      "ended_at": 1792850555.5683107
+    },
+    {
+      "step_number": 4,
+      "tool_call_id": "b-final",
+      "tool_name": "final_answer",
+      "args_digest": "c182b61d77a72ac081b4bb482a57dde3e68b0eb603540025409989638146684c",
+      "decision": "allow",
+      "rule": "ALLOWED",
+      "result_status": "success",
+      "is_write": false,
+      "idempotency_key": "",
+      "arguments": {
+        "answer": "已将 add 修复为 a + b，test_app.py 通过。"
+      },
+      "observation": "{\"content\": {\"answer\": \"已将 add 修复为 a + b，test_app.py 通过。\"}}",
+      "started_at": 1792850555.5784786,
+      "ended_at": 1792850555.5784786
+    }
+  ],
+  "approvals": [
+    {
+      "approval_id": "ap-demo1",
+      "tool_name": "write_file",
+      "args_digest": "8495e77b003d4f726b4169d28354b5f8012c0926b507909b76c5ad8b55ab5d7a",
+      "actor": "user",
+      "granted_at": 1792850555.2060618,
+      "consumed": true,
+      "revoked": false,
+      "revoked_reason": ""
+    }
+  ],
+  "audit_chain": [
+    {
+      "seq": 1,
+      "run_id": "demo1-repair",
+      "phase": "approval",
+      "decision": "approved",
+      "rule": "APPROVAL_GRANTED",
+      "actor": "user",
+      "tool_call_id": null,
+      "tool_name": "write_file",
+      "step_number": null,
+      "message": "预授权写操作：write_file",
+      "detail": {
+        "args_digest": "8495e77b003d4f726b4169d28354b5f8012c0926b507909b76c5ad8b55ab5d7a",
+        "approval_id": "ap-demo1"
+      },
+      "latency_ms": null
+    },
+    {
+      "seq": 2,
+      "run_id": "demo1-repair",
+      "phase": "state",
+      "decision": "recorded",
+      "rule": "RUN_STARTED",
+      "actor": "system",
+      "tool_call_id": null,
+      "tool_name": null,
+      "step_number": null,
+      "message": "修复 app.py，使 test_app.py 通过",
+      "detail": {
+        "task_kind": "test_repair"
+      },
+      "latency_ms": null
+    },
+    {
+      "seq": 3,
+      "run_id": "demo1-repair",
+      "phase": "gate",
+      "decision": "allow",
+      "rule": "ALLOWED",
+      "actor": "model",
+      "tool_call_id": "b-read",
+      "tool_name": "read_file",
+      "step_number": 1,
+      "message": "全部前置检查通过",
+      "detail": {},
+      "latency_ms": null
+    },
+    {
+      "seq": 4,
+      "run_id": "demo1-repair",
+      "phase": "result",
+      "decision": "executed",
+      "rule": "OK",
+      "actor": "harness",
+      "tool_call_id": "b-read",
+      "tool_name": "read_file",
+      "step_number": 1,
+      "message": "handler executed",
+      "detail": {
+        "is_write": false
+      },
+      "latency_ms": 0.71
+    },
+    {
+      "seq": 5,
+      "run_id": "demo1-repair",
+      "phase": "gate",
+      "decision": "allow",
+      "rule": "ALLOWED",
+      "actor": "model",
+      "tool_call_id": "b-write",
+      "tool_name": "write_file",
+      "step_number": 2,
+      "message": "全部前置检查通过",
+      "detail": {},
+      "latency_ms": null
+    },
+    {
+      "seq": 6,
+      "run_id": "demo1-repair",
+      "phase": "approval",
+      "decision": "approved",
+      "rule": "APPROVED",
+      "actor": "user",
+      "tool_call_id": "b-write",
+      "tool_name": "write_file",
+      "step_number": 2,
+      "message": "审批 ap-demo1 已消费",
+      "detail": {
+        "args_digest": "8495e77b003d4f726b4169d28354b5f8012c0926b507909b76c5ad8b55ab5d7a"
+      },
+      "latency_ms": null
+    },
+    {
+      "seq": 7,
+      "run_id": "demo1-repair",
+      "phase": "result",
+      "decision": "executed",
+      "rule": "OK",
+      "actor": "harness",
+      "tool_call_id": "b-write",
+      "tool_name": "write_file",
+      "step_number": 2,
+      "message": "handler executed",
+      "detail": {
+        "is_write": true
+      },
+      "latency_ms": 1.45
+    },
+    {
+      "seq": 8,
+      "run_id": "demo1-repair",
+      "phase": "gate",
+      "decision": "allow",
+      "rule": "ALLOWED",
+      "actor": "model",
+      "tool_call_id": "b-test",
+      "tool_name": "run_test",
+      "step_number": 3,
+      "message": "全部前置检查通过",
+      "detail": {},
+      "latency_ms": null
+    },
+    {
+      "seq": 9,
+      "run_id": "demo1-repair",
+      "phase": "result",
+      "decision": "executed",
+      "rule": "OK",
+      "actor": "harness",
+      "tool_call_id": "b-test",
+      "tool_name": "run_test",
+      "step_number": 3,
+      "message": "handler executed",
+      "detail": {
+        "is_write": false
+      },
+      "latency_ms": 329.95
+    },
+    {
+      "seq": 10,
+      "run_id": "demo1-repair",
+      "phase": "gate",
+      "decision": "allow",
+      "rule": "ALLOWED",
+      "actor": "model",
+      "tool_call_id": "b-final",
+      "tool_name": "final_answer",
+      "step_number": 4,
+      "message": "全部前置检查通过",
+      "detail": {},
+      "latency_ms": null
+    },
+    {
+      "seq": 11,
+      "run_id": "demo1-repair",
+      "phase": "result",
+      "decision": "executed",
+      "rule": "OK",
+      "actor": "harness",
+      "tool_call_id": "b-final",
+      "tool_name": "final_answer",
+      "step_number": 4,
+      "message": "handler executed",
+      "detail": {
+        "is_write": false
+      },
+      "latency_ms": 0.0
+    },
+    {
+      "seq": 12,
+      "run_id": "demo1-repair",
+      "phase": "state",
+      "decision": "recorded",
+      "rule": "RUN_FINISHED",
+      "actor": "system",
+      "tool_call_id": null,
+      "tool_name": null,
+      "step_number": null,
+      "message": "交付物与证据齐备且在当前版本有效",
+      "detail": {
+        "stop_reason": "completed",
+        "accepted": true,
+        "status": "completed"
+      },
+      "latency_ms": null
+    }
+  ],
+  "recovery": null
+}

@@ -1,0 +1,134 @@
+{
+  "demo_1_full_run": {
+    "code_understanding": {
+      "run_id": "demo1-understand",
+      "status": "completed",
+      "stop_reason": "completed",
+      "accepted": true,
+      "reason": "交付物与证据齐备且在当前版本有效",
+      "final_answer": "app.py 中的 add(a, b) 实际返回 a - b（疑似缺陷）。",
+      "steps_used": 2,
+      "writes_used": 0,
+      "resumed": false,
+      "recovery": null
+    },
+    "test_repair": {
+      "run_id": "demo1-repair",
+      "status": "completed",
+      "stop_reason": "completed",
+      "accepted": true,
+      "reason": "交付物与证据齐备且在当前版本有效",
+      "final_answer": "已将 add 修复为 a + b，test_app.py 通过。",
+      "steps_used": 4,
+      "writes_used": 1,
+      "resumed": false,
+      "recovery": null
+    },
+    "run_record_keys": [
+      "approvals",
+      "audit_chain",
+      "budget",
+      "evidence",
+      "recovery",
+      "run",
+      "steps"
+    ]
+  },
+  "demo_2_audit_chain": {
+    "denied_tool_call": "tc-bad",
+    "denied_first_rule": "INVALID_ARGUMENT",
+    "read_chain_len": 2,
+    "write_chain_len": 4,
+    "audit_jsonl_lines": 11
+  },
+  "demo_3_checkpoint_recovery": {
+    "c3": {
+      "instance_1": {
+        "run_id": "demo3-resume",
+        "status": "stopped",
+        "stop_reason": "max_steps",
+        "accepted": false,
+        "reason": "达到本次会话步数上限",
+        "final_answer": null,
+        "steps_used": 2,
+        "writes_used": 0,
+        "resumed": false,
+        "recovery": null
+      },
+      "instance_2": {
+        "run_id": "demo3-resume",
+        "status": "completed",
+        "stop_reason": "completed",
+        "accepted": true,
+        "reason": "交付物与证据齐备且在当前版本有效",
+        "final_answer": "a=1，b=2。",
+        "steps_used": 3,
+        "writes_used": 0,
+        "resumed": true,
+        "recovery": {
+          "run_id": "demo3-resume",
+          "resumed_from_step": 2,
+          "unknown_result_tool_calls": [],
+          "workspace_changed": false,
+          "invalidated_evidence": 0,
+          "revoked_approvals": 0,
+          "status": "stopped",
+          "stop_reason": "max_steps",
+          "notes": []
+        }
+      }
+    },
+    "c2": {
+      "run_id": "demo3-c2",
+      "status": "stopped",
+      "stop_reason": "unknown_result",
+      "accepted": false,
+      "reason": "存在结果未知的写操作（1 个），禁止自动重放",
+      "final_answer": null,
+      "steps_used": 1,
+      "writes_used": 0,
+      "resumed": true,
+      "recovery": {
+        "run_id": "demo3-c2",
+        "resumed_from_step": 1,
+        "unknown_result_tool_calls": [
+          "c2-write"
+        ],
+        "workspace_changed": false,
+        "invalidated_evidence": 0,
+        "revoked_approvals": 0,
+        "status": "running",
+        "stop_reason": null,
+        "notes": [
+          "unknown_result_writes=1"
+        ]
+      }
+    }
+  },
+  "demo_4_approval": {
+    "phase_1": {
+      "run_id": "demo4-approval",
+      "status": "waiting_approval",
+      "stop_reason": "waiting_approval",
+      "accepted": false,
+      "reason": "写操作等待人工审批",
+      "final_answer": null,
+      "steps_used": 1,
+      "writes_used": 0,
+      "resumed": false,
+      "recovery": null
+    },
+    "phase_2": {
+      "run_id": "demo4-approval",
+      "status": "completed",
+      "stop_reason": "completed",
+      "accepted": true,
+      "reason": "交付物与证据齐备且在当前版本有效",
+      "final_answer": "已修复并通过测试。",
+      "steps_used": 4,
+      "writes_used": 1,
+      "resumed": false,
+      "recovery": null
+    }
+  }
+}

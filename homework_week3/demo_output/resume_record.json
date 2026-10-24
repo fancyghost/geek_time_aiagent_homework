@@ -1,0 +1,42 @@
+{
+  "process_a": {
+    "run_id": "run_resume",
+    "status": "stopped",
+    "stop_reason": "interrupted",
+    "accepted": false,
+    "reason": "本会话已执行 2 步，模拟中断",
+    "final_answer": null,
+    "steps_used": 2,
+    "writes_used": 1,
+    "resumed": false,
+    "recovery": null
+  },
+  "process_b": {
+    "run_id": "run_resume",
+    "status": "completed",
+    "stop_reason": "completed",
+    "accepted": true,
+    "reason": "交付物与证据齐备且在当前版本有效",
+    "final_answer": "已从 Checkpoint 恢复，在当前版本跑通 test_app.py，修复完成。",
+    "steps_used": 4,
+    "writes_used": 1,
+    "resumed": true,
+    "recovery": {
+      "run_id": "run_resume",
+      "resumed_from_step": 2,
+      "unknown_result_tool_calls": [],
+      "workspace_changed": false,
+      "invalidated_evidence": 0,
+      "revoked_approvals": 0,
+      "status": "stopped",
+      "stop_reason": "interrupted",
+      "notes": []
+    }
+  },
+  "checkpoint_dir": "C:\\Users\\lurui\\AppData\\Local\\Temp\\guarded_demo_2a0a8n9p\\resume\\ckpt",
+  "notes": {
+    "steps_continue_not_reset": 4,
+    "writes_not_repeated": 1,
+    "resumed_flag": true
+  }
+}

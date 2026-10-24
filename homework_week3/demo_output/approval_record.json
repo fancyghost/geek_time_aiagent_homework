@@ -1,0 +1,26 @@
+{
+  "paused": {
+    "run_id": "run_approval",
+    "status": "waiting_approval",
+    "stop_reason": "waiting_approval",
+    "accepted": false,
+    "reason": "写操作等待人工审批",
+    "final_answer": null,
+    "steps_used": 2,
+    "writes_used": 0,
+    "resumed": false,
+    "recovery": null
+  },
+  "file_before_approval": "def add(a, b):\n    return a - b\n",
+  "approve_result_ok": true,
+  "file_after_approval": "def add(a, b):\n    return a + b\n",
+  "state_after_approval": "running",
+  "audit_chain_write": [
+    "#  4 [gate/confirm] rule=APPROVAL_REQUIRED actor=model tool_call_id=call_write_g3 tool=write_file :: 写操作需要审批后才能执行",
+    "#  5 [approval/confirm] rule=APPROVAL_REQUIRED actor=harness tool_call_id=call_write_g3 tool=write_file :: 等待人工审批",
+    "#  7 [approval/approved] rule=GRANTED actor=user tool_call_id=call_write_g3 tool=write_file :: 人工审批 ap_9aaf8cd2",
+    "#  8 [gate/allow] rule=ALLOWED actor=user tool_call_id=call_write_g3 tool=write_file :: 全部前置检查通过",
+    "#  9 [approval/approved] rule=APPROVED actor=user tool_call_id=call_write_g3 tool=write_file :: 审批 ap_9aaf8cd2 已消费",
+    "# 10 [result/executed] rule=OK actor=harness tool_call_id=call_write_g3 tool=write_file :: handler executed"
+  ]
+}
