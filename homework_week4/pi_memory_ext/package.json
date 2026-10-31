@@ -1,0 +1,21 @@
+{
+	"name": "pi-memory-ext",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"description": "pi 扩展：把本作业 pi_memory 长期记忆（写入/查找/更新/删除四动作）真正接入 pi，并与 Python 版共享同一份磁盘存储",
+	"pi": {
+		"extensions": [
+			"./extension.ts"
+		]
+	},
+	"scripts": {
+		"test": "node --test",
+		"typecheck": "tsc --noEmit -p tsconfig.json"
+	},
+	"devDependencies": {
+		"@types/node": "^24.0.0",
+		"typebox": "1.3.27",
+		"typescript": "5.9"
+	}
+}
