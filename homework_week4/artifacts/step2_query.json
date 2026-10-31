@@ -1,0 +1,58 @@
+{
+  "fresh_session_find": {
+    "ok": true,
+    "action": "find",
+    "count": 1,
+    "records": [
+      {
+        "id": "b1dd3061e34541f9ac7a7deb9426eb61",
+        "project": "demo_project",
+        "title": "会话测试入口",
+        "content": {
+          "test_path": "tests/test_session.py",
+          "run_command": "python -m pytest tests/test_session.py -q",
+          "doc_path": "SESSION_TEST.md",
+          "case_count": 4,
+          "summary": "验证用户会话创建/校验/过期/登出的单元测试入口"
+        },
+        "source": [
+          {
+            "path": "tests/test_session.py",
+            "note": "会话测试文件本体"
+          },
+          {
+            "path": "SESSION_TEST.md",
+            "note": "测试说明"
+          }
+        ],
+        "tags": [
+          "session",
+          "test",
+          "pytest",
+          "auth"
+        ],
+        "revision": 1,
+        "created_at": 1793443451.517741,
+        "updated_at": 1793443451.517741,
+        "created_at_iso": "2026-10-31T18:44:11",
+        "updated_at_iso": "2026-10-31T18:44:11"
+      }
+    ],
+    "existence_checks": [
+      {
+        "test_path": "tests/test_session.py",
+        "abs": "C:\\Users\\lurui\\Desktop\\极客时间AI AGENT训练营\\db_agent\\homework_week4\\.demo_workspace\\demo_project\\tests\\test_session.py",
+        "exists": true
+      }
+    ]
+  },
+  "comparison": [
+    {
+      "memory_test_path": "tests/test_session.py",
+      "resolved_abs": "C:\\Users\\lurui\\Desktop\\极客时间AI AGENT训练营\\db_agent\\homework_week4\\.demo_workspace\\demo_project\\tests\\test_session.py",
+      "file_exists": true,
+      "consistent": true
+    }
+  ],
+  "answer": "从项目 demo_project 的长期记忆中查到『会话测试入口』(revision=1)：\n    测试入口 = tests/test_session.py\n    运行命令 = python -m pytest tests/test_session.py -q\n    来源     = tests/test_session.py, SESSION_TEST.md\n    全新会话核对：磁盘上该文件存在（记忆与实际一致）。"
+}

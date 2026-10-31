@@ -1,0 +1,9 @@
+# 依赖与构建产物
+node_modules/
+
+# 测试临时目录（node --test 运行时锚定在测试文件旁）
+.test-tmp/
+.test-tmp-ext/
+
+# 跨语言校验的一次性产物
+.xlang/

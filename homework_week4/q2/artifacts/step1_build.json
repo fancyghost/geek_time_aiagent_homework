@@ -1,0 +1,32 @@
+{
+  "embed_model": "BAAI/bge-large-zh-v1.5",
+  "embed_dim": 1024,
+  "chunk_size": 256,
+  "chunk_overlap": 48,
+  "doc_count": 3,
+  "docs": [
+    "常见问题FAQ.md",
+    "登录与会话策略.md",
+    "账号安全与风控.md"
+  ],
+  "node_count": 10,
+  "nodes_per_source": {
+    "常见问题FAQ.md": 2,
+    "登录与会话策略.md": 5,
+    "账号安全与风控.md": 3
+  },
+  "index_dir": "C:\\Users\\lurui\\Desktop\\极客时间AI AGENT训练营\\db_agent\\homework_week4\\q2\\index_store",
+  "index_files": [
+    "default__vector_store.json",
+    "docstore.json",
+    "graph_store.json",
+    "image__vector_store.json",
+    "index_store.json"
+  ],
+  "sample_chunk": {
+    "source": "常见问题FAQ.md",
+    "chunk_index": 0,
+    "node_id": "70d619b0-861c-4c22-8b9d-dc3dd15e59ad",
+    "text": "# 登录常见问题（FAQ）\n> 本文件以问答形式汇总登录相关的高频问题，是「登录资料」的一部分。## 账号与登录\n**问：忘记密码怎么办？**\n答：在登录页点击「忘记密码」，通过邮箱或手机号验证身份后重置。**问：登录会话多久过期？**\n答：默认有效期为 30 分钟，采用滑动过期；期间有操作会自动续期，超时后需重新登录。**问：勾选「记住我」有什么用？**"
+  }
+}

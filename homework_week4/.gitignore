@@ -1,0 +1,10 @@
+# 运行期产物与缓存（可由 run_demo.py / pytest 重新生成）
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# 演示的可变工作副本（每次运行从只读的 demo_project/ 整目录重建）
+.demo_workspace/
+
+# 临时控制台抓取（可能因 PowerShell 重定向而编码错乱，正式转录见 artifacts/console_transcript.txt）
+demo_console.txt
