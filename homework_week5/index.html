@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="observatory">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Trace Observatory · Agent 对话轨迹分析</title>
+<meta name="description" content="图形化展示一次完整 Agent 对话的执行轨迹：总时长、轮次、每次调用的开始时间/持续时长/内容，支持瀑布甘特图、回放、过滤与详情分析。" />
+<link rel="stylesheet" href="assets/app.css" />
+</head>
+<body>
+<!-- 层叠氛围背景：极光辉光 + 网格 + 颗粒 -->
+<div class="bg-layer" aria-hidden="true">
+  <div class="aurora aurora-a"></div>
+  <div class="aurora aurora-b"></div>
+  <div class="aurora aurora-c"></div>
+  <div class="bg-grid"></div>
+  <div class="bg-grain"></div>
+</div>
+
+<header class="topbar">
+  <div class="brand">
+    <svg class="brand-mark" viewBox="0 0 40 40" width="38" height="38" aria-hidden="true">
+      <defs>
+        <linearGradient id="bm" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="var(--c-llm)"/><stop offset="1" stop-color="var(--c-approval)"/>
+        </linearGradient>
+      </defs>
+      <rect x="3" y="3" width="34" height="34" rx="10" fill="none" stroke="url(#bm)" stroke-width="2"/>
+      <path d="M9 27 L15 27 L18 13 L22 31 L25 21 L31 21" fill="none" stroke="url(#bm)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="31" cy="21" r="2.6" fill="var(--c-tool)"/>
+    </svg>
+    <div class="brand-text">
+      <h1>Trace Observatory</h1>
+      <p>Agent 对话轨迹分析 · db_agent</p>
+    </div>
+  </div>
+
+  <nav class="trace-switch" id="traceSwitch" aria-label="选择示例对话"></nav>
+
+  <div class="top-actions">
+    <button class="btn btn-ghost" id="exportJson" title="导出当前轨迹 JSON">JSON</button>
+    <button class="btn btn-ghost" id="exportSvg" title="导出瀑布图 SVG">SVG</button>
+    <button class="btn btn-primary" id="exportPng" title="导出瀑布图 PNG">导出 PNG</button>
+  </div>
+</header>
+
+<main class="layout">
+  <section class="stage">
+    <!-- 关键指标条 -->
+    <div class="stats" id="stats" aria-live="polite"></div>
+
+    <!-- 工具条：搜索 / 类型过滤 / 状态过滤 -->
+    <div class="toolbar">
+      <div class="search-wrap">
+        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="M16.5 16.5 L21 21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <input type="search" id="search" placeholder="搜索调用名称 / 模型 / 工具 / 内容…" autocomplete="off" />
+        <button class="search-clear" id="searchClear" title="清空" aria-label="清空搜索">×</button>
+      </div>
+      <div class="chips" id="typeChips" role="group" aria-label="按调用类型过滤"></div>
+      <div class="chips" id="statusChips" role="group" aria-label="按状态过滤"></div>
+      <div class="match-count" id="matchCount"></div>
+    </div>
+
+    <!-- 回放运输条 -->
+    <div class="transport">
+      <button class="play-btn" id="playBtn" title="播放 / 暂停回放" aria-label="播放回放">
+        <svg class="ico-play" viewBox="0 0 24 24" width="20" height="20"><path d="M8 5 L19 12 L8 19 Z" fill="currentColor"/></svg>
+        <svg class="ico-pause" viewBox="0 0 24 24" width="20" height="20"><rect x="7" y="5" width="3.6" height="14" rx="1" fill="currentColor"/><rect x="13.4" y="5" width="3.6" height="14" rx="1" fill="currentColor"/></svg>
+      </button>
+      <button class="btn btn-ghost btn-icon" id="rewindBtn" title="回到起点" aria-label="回到起点">
+        <svg viewBox="0 0 24 24" width="18" height="18"><path d="M7 5 v14 M19 5 L9 12 L19 19 Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+      </button>
+      <input type="range" id="scrub" class="scrub" min="0" max="1000" step="1" value="1000" aria-label="回放进度" />
+      <div class="elapsed"><span id="elapsedNow">T+0.00s</span><span class="elapsed-sep">/</span><span id="elapsedTotal">0.00s</span></div>
+      <div class="speed-wrap">
+        <label for="speed">速度</label>
+        <input type="range" id="speed" min="0.25" max="4" step="0.25" value="1" />
+        <output id="speedOut">1.0×</output>
+      </div>
+      <div class="active-call" id="activeCall">就绪</div>
+    </div>
+
+    <!-- 瀑布甘特图 -->
+    <div class="chart-panel">
+      <div class="chart-head">
+        <h2>调用瀑布图 <span class="chart-sub">时间轴 → 每次调用的开始与持续</span></h2>
+        <div class="chart-hint" id="chartHint">点击任意调用查看详情 · 拖动播放头回放</div>
+      </div>
+      <div class="chart-scroll" id="chartScroll">
+        <svg id="waterfall" role="img" aria-label="Agent 对话调用瀑布甘特图"></svg>
+      </div>
+      <div class="legend" id="legend"></div>
+    </div>
+
+    <!-- 下方：对话转录 + 类型延迟分布 -->
+    <div class="lower">
+      <div class="panel transcript-panel">
+        <div class="panel-head"><h2>对话转录</h2><span class="panel-sub" id="turnCountLabel"></span></div>
+        <div class="transcript" id="transcript"></div>
+      </div>
+      <div class="panel latency-panel">
+        <div class="panel-head"><h2>各类型耗时占比</h2><span class="panel-sub">按调用类型聚合持续时长</span></div>
+        <div class="latency" id="latencyChart"></div>
+        <div class="token-summary" id="tokenSummary"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 右侧：常驻控制区 + 详情抽屉 -->
+  <aside class="sidebar">
+    <div class="controls">
+      <div class="controls-head">
+        <h2>控制台</h2><span class="live-dot">实时</span>
+      </div>
+
+      <div class="ctl">
+        <label for="zoom">时间缩放 <output id="zoomOut">1.0×</output></label>
+        <input type="range" id="zoom" min="0.5" max="8" step="0.1" value="1" />
+      </div>
+      <div class="ctl">
+        <label for="density">行高密度 <output id="densityOut">40px</output></label>
+        <input type="range" id="density" min="22" max="64" step="1" value="40" />
+      </div>
+      <div class="ctl">
+        <label for="glow">发光强度 <output id="glowOut">55</output></label>
+        <input type="range" id="glow" min="0" max="100" step="1" value="55" />
+      </div>
+      <div class="ctl">
+        <label for="group">分组方式</label>
+        <select id="group">
+          <option value="time">时间顺序（树形缩进）</option>
+          <option value="type">调用类型泳道</option>
+          <option value="turn">按对话轮次</option>
+        </select>
+      </div>
+      <div class="ctl">
+        <label for="sort">排序依据</label>
+        <select id="sort">
+          <option value="start">开始时间</option>
+          <option value="duration">持续时长（降序）</option>
+          <option value="name">名称</option>
+        </select>
+      </div>
+      <div class="ctl">
+        <label for="theme">配色主题</label>
+        <select id="theme">
+          <option value="observatory">Observatory · 深空</option>
+          <option value="blueprint">Blueprint · 蓝图</option>
+          <option value="ember">Ember · 熔金</option>
+        </select>
+      </div>
+
+      <div class="ctl-switches">
+        <label class="switch"><input type="checkbox" id="grid" checked /><span class="track"></span><span class="sw-label">网格</span></label>
+        <label class="switch"><input type="checkbox" id="connectors" checked /><span class="track"></span><span class="sw-label">父子连线</span></label>
+        <label class="switch"><input type="checkbox" id="labels" checked /><span class="track"></span><span class="sw-label">内容摘要</span></label>
+        <label class="switch"><input type="checkbox" id="ghost" checked /><span class="track"></span><span class="sw-label">回放幽灵态</span></label>
+      </div>
+
+      <div class="ctl-buttons">
+        <button class="btn btn-ghost" id="resetView">重置视图</button>
+        <button class="btn btn-ghost" id="randomize">随机轨迹</button>
+        <button class="btn btn-ghost" id="saveView">保存视图</button>
+      </div>
+      <div class="saved-views" id="savedViews"></div>
+    </div>
+
+    <div class="drawer" id="drawer">
+      <div class="drawer-empty" id="drawerEmpty">
+        <svg viewBox="0 0 24 24" width="34" height="34" aria-hidden="true"><path d="M4 6 h16 M4 12 h10 M4 18 h13" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg>
+        <p>点击瀑布图中的任意调用<br/>查看开始时间、时长、内容与来源</p>
+      </div>
+      <div class="drawer-body" id="drawerBody" hidden></div>
+    </div>
+  </aside>
+</main>
+
+<div class="tooltip" id="tooltip" role="status" aria-live="polite"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="data/traces.js"></script>
+<script src="assets/chart.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>

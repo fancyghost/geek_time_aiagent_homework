@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<title>viewport diag</title>
+<style>
+  html,body { margin:0; padding:0; background:#20242c; }
+  iframe { border:0; display:block; background:#000; }
+</style>
+</head>
+<body>
+<iframe id="f" src="index.html"></iframe>
+<script>
+  // _diag.html#<size>[?k=v&...]  — 同源驱动 iframe 内应用，用于可复现截图
+  var raw = (location.hash || "#m").slice(1);
+  var qi = raw.indexOf("?");
+  var mode = qi >= 0 ? raw.slice(0, qi) : raw;
+  var q = new URLSearchParams(qi >= 0 ? raw.slice(qi + 1) : "");
+  var size = { m:[390,844], mt:[390,1500], t:[820,1180], dv:[1440,800], d:[1440,1560] }[mode] || [390,844];
+  var f = document.getElementById("f");
+  f.style.width = size[0] + "px";
+  f.style.height = size[1] + "px";
+  f.addEventListener("load", function () {
+    setTimeout(function () {
+      var d = f.contentDocument, w = f.contentWindow;
+      var st = d.createElement("style");
+      st.textContent = "*{animation:none!important;transition:none!important}";
+      d.head.appendChild(st);
+      function setSel(id, val) { var el = d.getElementById(id); if (el && val) { el.value = val; el.dispatchEvent(new w.Event("change", { bubbles:true })); } }
+      setSel("group", q.get("group"));
+      setSel("theme", q.get("theme"));
+      setSel("sort", q.get("sort"));
+      if (q.get("trace")) { var p = d.querySelector('[data-trace="' + q.get("trace") + '"]'); if (p) p.click(); }
+      if (q.get("select")) { var b = d.querySelector('g.wf-bar[data-id="' + q.get("select") + '"]'); if (b) b.dispatchEvent(new w.MouseEvent("click", { bubbles:true })); }
+      if (q.get("select")) { var sb = d.querySelector(".sidebar"), dw = d.querySelector(".drawer"); if (sb && dw) sb.scrollTop = dw.offsetTop - 6; }
+      if (q.get("scroll") === "chart") { d.querySelector(".chart-panel").scrollIntoView({ block:"start" }); w.scrollBy(0, -70); }
+      if (q.get("play")) { d.getElementById("playBtn").click(); }
+      d.title = "ready";
+    }, 400);
+  });
+</script>
+</body>
+</html>
